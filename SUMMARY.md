@@ -50,6 +50,24 @@ worst drawdown is actually the **dot-com crash**, not the GFC: GGBL peaked Oct 2
 73%, and didn't fully recover until Dec 2016 — over a decade underwater spanning both
 the dot-com bust and the GFC back to back.
 
+## Same table, post-2012 only
+
+1995–2011 was an unusually brutal double-crisis stretch (dot-com + GFC, back to back).
+Splitting at 2012 — roughly when central banks settled into the sustained low-rate/QE era —
+shows a very different market:
+
+| Fund | Total return | CAGR | Worst drawdown | Drawdown period | Time to recover |
+|------|-------------:|-----:|---------------:|:----------------:|-----------------:|
+| VDHG | +372% | 11.3% | −17.8% | Jan 2020 – Mar 2020 | 0.8 yrs |
+| DHHF | +503% | 13.2% | −18.1% | Jan 2020 – Mar 2020 | 0.8 yrs |
+| BGBL | +756% | 16.0% | −16.7% | Dec 2021 – Jun 2022 | 1.5 yrs |
+| GHHF | +1,030% | 18.2% | −27.3% | Jan 2020 – Mar 2020 | 1.1 yrs |
+| GGBL | +1,771% | 22.4% | −25.2% | Dec 2021 – Sep 2022 | 1.6 yrs |
+
+Post-2012, CAGRs roughly double and recoveries take under 2 years instead of 6–16 — the
+worst hit is COVID or the 2022 rate shock, not a multi-year crisis. Which era is more
+representative going forward is a judgement call, not something this data answers for you.
+
 ## Caveats (please read before using)
 
 - This is **synthetic/reconstructed** data, not the real funds before inception.

@@ -11,6 +11,19 @@
   (Drawdown period = pre-crash peak to trough; Max DD recovery = calendar days peak to full recovery)
 
 
+=== Summary (Jan 2012 - Jun 2026, total return, AUD) ===
++-------+---------------+---------+---------------+---------------------+------------------+
+| Fund  |  Total return |    CAGR |        Max DD |     Drawdown period |  Max DD recovery |
++-------+---------------+---------+---------------+---------------------+------------------+
+| DHHF  |       502.9%  |  13.19% |       -18.1%  | Jan 2020 - Mar 2020 |      304d (0.8y) |
+| VDHG  |       371.7%  |  11.29% |       -17.8%  | Jan 2020 - Mar 2020 |      304d (0.8y) |
+| BGBL  |       756.4%  |  15.96% |       -16.7%  | Dec 2021 - Jun 2022 |      546d (1.5y) |
+| GHHF  |      1029.7%  |  18.20% |       -27.3%  | Jan 2020 - Mar 2020 |      394d (1.1y) |
+| GGBL  |      1771.2%  |  22.39% |       -25.2%  | Dec 2021 - Sep 2022 |      577d (1.6y) |
++-------+---------------+---------+---------------+---------------------+------------------+
+  (Drawdown period = pre-crash peak to trough; Max DD recovery = calendar days peak to full recovery)
+
+
 === Annual return & calendar-year max drawdown (%) - all assets ===
 +------+------------------+------------------+------------------+------------------+------------------+
 | Year |       DHHF       |       VDHG       |       BGBL       |       GHHF       |       GGBL       |

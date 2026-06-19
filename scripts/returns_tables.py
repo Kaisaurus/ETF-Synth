@@ -51,15 +51,21 @@ def calendar_year_max_dd(level: pd.Series, year: int) -> float:
     return dd[dd.index.year == year].min()
 
 
-def full_period_max_dd(level: pd.Series) -> float:
-    base = pd.concat([pd.Series([100.0], index=[level.index[0]]), level])
-    return (base / base.cummax() - 1.0).min()
+def period_metrics(level: pd.Series, start=None) -> dict:
+    """Total return / CAGR / max drawdown / drawdown window for `level` from
+    `start` (inclusive) to its end. start=None covers the whole series, anchored
+    at the synthetic base of 100; a real `start` is anchored at the last value
+    before it (the "entry price" for an investor starting then) - the same trick
+    used in calendar_year_max_dd, generalised to an arbitrary cutoff."""
+    sub = level if start is None else level[level.index >= start]
+    prior = level[level.index < sub.index[0]]
+    anchor = float(prior.iloc[-1]) if len(prior) else 100.0
 
+    n = len(sub)
+    total = sub.iloc[-1] / anchor - 1.0
+    cg = (sub.iloc[-1] / anchor) ** (12.0 / n) - 1.0
 
-def drawdown_window(level: pd.Series):
-    """(peak_date, trough_date, recovery_date) for the worst peak-to-trough
-    drawdown in the series. recovery_date is None if not yet recovered."""
-    base = pd.concat([pd.Series([100.0], index=[level.index[0]]), level])
+    base = pd.concat([pd.Series([anchor], index=[sub.index[0]]), sub])
     run_max = base.cummax()
     dd = base / run_max - 1.0
     trough_date = dd.idxmin()
@@ -68,15 +74,22 @@ def drawdown_window(level: pd.Series):
     after = base[base.index > trough_date]
     recovered = after[after >= peak_level]
     recovery_date = recovered.index[0] if not recovered.empty else None
-    return peak_date, trough_date, recovery_date
+
+    return {"total_return": total, "cagr": cg, "max_dd": dd.min(),
+            "peak_date": peak_date, "trough_date": trough_date,
+            "recovery_date": recovery_date}
 
 
 def total_return(level: pd.Series) -> float:
-    return level.iloc[-1] / 100.0 - 1.0
+    return period_metrics(level)["total_return"]
 
 
 def cagr(level: pd.Series) -> float:
-    return (level.iloc[-1] / 100.0) ** (12.0 / len(level)) - 1.0
+    return period_metrics(level)["cagr"]
+
+
+def full_period_max_dd(level: pd.Series) -> float:
+    return period_metrics(level)["max_dd"]
 
 
 # ---------------------------------------------------------------------------
@@ -124,23 +137,24 @@ def _format_recovery(peak_date, recovery_date) -> str:
     return f"{days:,}d ({days/365.25:.1f}y)"
 
 
-def summary_table(levels: pd.DataFrame) -> str:
-    start = levels.index.min().strftime("%b %Y")
-    end = levels.index.max().strftime("%b %Y")
+def summary_table(levels: pd.DataFrame, start: str | None = None) -> str:
+    """`levels` must be the full-history DataFrame (pre-cutoff values are needed
+    to anchor a sub-period); pass `start` (e.g. "2012-01-01") for a sub-period."""
+    sub_index = levels.index if start is None else levels.index[levels.index >= start]
+    range_start = sub_index.min().strftime("%b %Y")
+    end = sub_index.max().strftime("%b %Y")
     rule = ("+" + "-" * 7 + "+" + "-" * 15 + "+" + "-" * 9 + "+" + "-" * 15
             + "+" + "-" * 21 + "+" + "-" * 18 + "+")
-    out = [f"=== Summary ({start} - {end}, total return, AUD) ===", rule,
+    out = [f"=== Summary ({range_start} - {end}, total return, AUD) ===", rule,
            "|" + f" {'Fund':<5} " + "|" + f" {'Total return':>13} " + "|"
            + f" {'CAGR':>7} " + "|" + f" {'Max DD':>13} " + "|"
            + f" {'Drawdown period':>19} " + "|"
            + f" {'Max DD recovery':>16} " + "|", rule]
     for a in ASSETS:
-        tr = total_return(levels[a]) * 100
-        cg = cagr(levels[a]) * 100
-        dd = full_period_max_dd(levels[a]) * 100
-        peak_date, trough_date, recovery_date = drawdown_window(levels[a])
-        period = _format_period(peak_date, trough_date)
-        rec = _format_recovery(peak_date, recovery_date)
+        m = period_metrics(levels[a], start=start)
+        tr, cg, dd = m["total_return"] * 100, m["cagr"] * 100, m["max_dd"] * 100
+        period = _format_period(m["peak_date"], m["trough_date"])
+        rec = _format_recovery(m["peak_date"], m["recovery_date"])
         out.append("|" + f" {a:<5} " + "|" + f" {tr:>11.1f}%  " + "|"
                    + f" {cg:>6.2f}% " + "|" + f" {dd:>11.1f}%  " + "|"
                    + f" {period:>19} " + "|"
@@ -193,7 +207,9 @@ def main():
     levels = load_levels()
     rets = monthly_returns(levels)
 
-    blocks = [summary_table(levels), combined_table(levels, rets)]
+    blocks = [summary_table(levels),
+              summary_table(levels, start="2012-01-01"),
+              combined_table(levels, rets)]
     blocks += [asset_monthly_table(rets[a], levels[a], a) for a in ASSETS]
     text = "\n\n\n".join(blocks) + "\n"
 

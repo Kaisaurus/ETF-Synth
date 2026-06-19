@@ -34,18 +34,21 @@ Monthly-return correlation: **DHHF 0.97, VDHG 0.97, BGBL 0.92, GHHF 0.94, GGBL 0
 
 ## Headline results (Jan 1995 → Jun 2026, total return, AUD)
 
-| Fund | Total return | CAGR | Worst drawdown |
-|------|-------------:|-----:|---------------:|
-| VDHG | +1,285% | 8.8% | −41% |
-| DHHF | +1,558% | 9.4% | −41% |
-| BGBL | +1,913% | 10.0% | −47% |
-| GHHF | +2,520% | 11.0% | **−60%** |
-| GGBL | +3,135% | 11.6% | **−73%** |
+| Fund | Total return | CAGR | Worst drawdown | Time to recover |
+|------|-------------:|-----:|---------------:|-----------------:|
+| VDHG | +1,285% | 8.8% | −41% | 5.9 yrs |
+| DHHF | +1,558% | 9.4% | −41% | 6.4 yrs |
+| BGBL | +1,913% | 10.0% | −47% | 13.1 yrs |
+| GHHF | +2,520% | 11.0% | **−60%** | 7.6 yrs |
+| GGBL | +3,135% | 11.6% | **−73%** | **16.2 yrs** |
 
 (VDHG = Vanguard Diversified High Growth, included as a comparison; it holds 10% bonds.)
+"Time to recover" = years from the pre-crash peak back to break-even.
 
-The geared funds compound faster but the synthetic GFC drawdowns (−60% / −73%) show
-the risk their short real track records have never had to display.
+The geared funds compound faster but show brutal worst-case drawdowns. Note BGBL/GGBL's
+worst drawdown is actually the **dot-com crash**, not the GFC: GGBL peaked Oct 2000, fell
+73%, and didn't fully recover until Dec 2016 — over a decade underwater spanning both
+the dot-com bust and the GFC back to back.
 
 ## Caveats (please read before using)
 

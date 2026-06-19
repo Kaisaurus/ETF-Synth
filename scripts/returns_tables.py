@@ -56,6 +56,22 @@ def full_period_max_dd(level: pd.Series) -> float:
     return (base / base.cummax() - 1.0).min()
 
 
+def max_dd_recovery_days(level: pd.Series) -> int | None:
+    """Calendar days from the peak that began the worst drawdown to the date the
+    level first fully recovers back to that peak. None if not yet recovered."""
+    base = pd.concat([pd.Series([100.0], index=[level.index[0]]), level])
+    run_max = base.cummax()
+    dd = base / run_max - 1.0
+    trough_date = dd.idxmin()
+    peak_level = run_max.loc[trough_date]
+    peak_date = base[:trough_date].idxmax()
+    after = base[base.index > trough_date]
+    recovered = after[after >= peak_level]
+    if recovered.empty:
+        return None
+    return (recovered.index[0] - peak_date).days
+
+
 def total_return(level: pd.Series) -> float:
     return level.iloc[-1] / 100.0 - 1.0
 
@@ -98,20 +114,32 @@ def asset_monthly_table(rets: pd.Series, level: pd.Series, asset: str) -> str:
 # ---------------------------------------------------------------------------
 # Headline summary table
 # ---------------------------------------------------------------------------
+def _format_recovery(days: int | None) -> str:
+    if days is None:
+        return "not yet"
+    return f"{days:,}d ({days/365.25:.1f}y)"
+
+
 def summary_table(levels: pd.DataFrame) -> str:
     start = levels.index.min().strftime("%b %Y")
     end = levels.index.max().strftime("%b %Y")
-    rule = "+" + "-" * 7 + "+" + "-" * 15 + "+" + "-" * 9 + "+" + "-" * 15 + "+"
+    rule = ("+" + "-" * 7 + "+" + "-" * 15 + "+" + "-" * 9 + "+" + "-" * 15
+            + "+" + "-" * 18 + "+")
     out = [f"=== Summary ({start} - {end}, total return, AUD) ===", rule,
            "|" + f" {'Fund':<5} " + "|" + f" {'Total return':>13} " + "|"
-           + f" {'CAGR':>7} " + "|" + f" {'Max DD':>13} " + "|", rule]
+           + f" {'CAGR':>7} " + "|" + f" {'Max DD':>13} " + "|"
+           + f" {'Max DD recovery':>16} " + "|", rule]
     for a in ASSETS:
         tr = total_return(levels[a]) * 100
         cg = cagr(levels[a]) * 100
         dd = full_period_max_dd(levels[a]) * 100
+        rec = _format_recovery(max_dd_recovery_days(levels[a]))
         out.append("|" + f" {a:<5} " + "|" + f" {tr:>11.1f}%  " + "|"
-                   + f" {cg:>6.2f}% " + "|" + f" {dd:>11.1f}%  " + "|")
+                   + f" {cg:>6.2f}% " + "|" + f" {dd:>11.1f}%  " + "|"
+                   + f" {rec:>16} " + "|")
     out.append(rule)
+    out.append("  (Max DD recovery = calendar days from the pre-crash peak to "
+               "fully recovering that peak)")
     return "\n".join(out)
 
 

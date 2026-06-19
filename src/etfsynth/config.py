@@ -15,8 +15,10 @@ REAL_ETFS = {
     "DHHF": "DHHF.AX",
     "VDHG": "VDHG.AX",
     "BGBL": "BGBL.AX",
+    "NDQ": "NDQ.AX",
     "GHHF": "GHHF.AX",
     "GGBL": "GGBL.AX",
+    "GNDQ": "GNDQ.AX",
 }
 
 # ---- Sleeve proxies (free, long total-return history) -----------------------
@@ -39,9 +41,16 @@ AUS_TR_ETF = "STW.AX"          # SPDR S&P/ASX 200, TR via adj close (~2001)
 AUS_PRICE_INDEX = "^AORD"      # All Ordinaries PRICE (no dividends)
 AUS_DIV_YIELD = 0.04           # annual yield add-back for pre-STW reconstruction
 
+# Nasdaq-100: QQQ (real TR, from 1999) spliced over ^NDX (price index, from 1995)
+# with a small dividend add-back (Nasdaq-100 historically paid minimal dividends,
+# much lower than the broad market, until big tech started paying more from ~2012).
+NASDAQ_CHAIN = ["QQQ", "^NDX"]
+NASDAQ_DIV_YIELD = 0.005
+
 # Currency: USD-denominated proxies that must be converted to AUD (unhedged).
 USD_PROXIES = {"VTSMX", "^SP500TR", "VFINX", "VTMGX", "EFA", "VEA",
-               "VEIEX", "EEM", "VWO", "VGTSX", "VXUS", "VWIGX", "VBMFX"}
+               "VEIEX", "EEM", "VWO", "VGTSX", "VXUS", "VWIGX", "VBMFX",
+               "QQQ", "^NDX"}
 
 # BGBL = developed markets ex-Australia ~ market-cap blend of US + developed-ex-US.
 WORLD_EX_AUS_WEIGHTS = {"us_total": 0.70, "dev_ex_us": 0.30}
@@ -74,8 +83,10 @@ MER = {
     "DHHF": 0.0019,
     "VDHG": 0.0027,
     "BGBL": 0.0008,
+    "NDQ": 0.0038,
     "GHHF": 0.0035,
     "GGBL": 0.0035,   # ⚠️ confirm
+    "GNDQ": 0.0050,
 }
 
 # ---- DHHF strategic sleeve weights (held constant in v1) -------------------

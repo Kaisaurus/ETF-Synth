@@ -85,6 +85,14 @@ def _aus_sleeve(fx: pd.Series) -> pd.Series:
     return splice_returns([r_stw, r_aord_tr])
 
 
+def _nasdaq_sleeve(fx: pd.Series) -> pd.Series:
+    """Nasdaq-100 total return: QQQ (real TR, AUD) spliced over ^NDX (price index,
+    AUD) + a small dividend-yield add-back for the pre-QQQ period."""
+    r_qqq = _proxy_aud_returns(config.NASDAQ_CHAIN[0], fx)
+    r_ndx_tr = _proxy_aud_returns(config.NASDAQ_CHAIN[1], fx) + config.NASDAQ_DIV_YIELD / 12.0
+    return splice_returns([r_qqq, r_ndx_tr])
+
+
 # ---------------------------------------------------------------------------
 # Sleeves (AUD monthly total returns)
 # ---------------------------------------------------------------------------
@@ -100,6 +108,9 @@ def build_sleeves(fx: pd.Series) -> dict[str, pd.Series]:
 
     # Australian shares total return.
     sleeves["aus_shares"] = _aus_sleeve(fx)
+
+    # Nasdaq-100 total return.
+    sleeves["nasdaq"] = _nasdaq_sleeve(fx)
 
     return sleeves
 
@@ -170,13 +181,16 @@ def build_all() -> dict[str, pd.Series]:
 
     dhhf_basket = _blend(sleeves, config.DHHF_WEIGHTS)
     world_basket = _blend(sleeves, config.WORLD_EX_AUS_WEIGHTS)
+    nasdaq_basket = sleeves["nasdaq"]
 
     out_rets = {
         "DHHF": apply_fee(dhhf_basket, config.MER["DHHF"]),
         "VDHG": build_vdhg(fx),
         "BGBL": apply_fee(world_basket, config.MER["BGBL"]),
+        "NDQ": apply_fee(nasdaq_basket, config.MER["NDQ"]),
         "GHHF": apply_fee(apply_gearing(dhhf_basket, cash), config.MER["GHHF"]),
         "GGBL": apply_fee(apply_gearing(world_basket, cash), config.MER["GGBL"]),
+        "GNDQ": apply_fee(apply_gearing(nasdaq_basket, cash), config.MER["GNDQ"]),
     }
     levels = {k: level_from_returns(v) for k, v in out_rets.items()}
     levels["_dhhf_basket_gross"] = level_from_returns(dhhf_basket)

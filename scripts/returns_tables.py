@@ -96,6 +96,26 @@ def asset_monthly_table(rets: pd.Series, level: pd.Series, asset: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Headline summary table
+# ---------------------------------------------------------------------------
+def summary_table(levels: pd.DataFrame) -> str:
+    start = levels.index.min().strftime("%b %Y")
+    end = levels.index.max().strftime("%b %Y")
+    rule = "+" + "-" * 7 + "+" + "-" * 15 + "+" + "-" * 9 + "+" + "-" * 15 + "+"
+    out = [f"=== Summary ({start} - {end}, total return, AUD) ===", rule,
+           "|" + f" {'Fund':<5} " + "|" + f" {'Total return':>13} " + "|"
+           + f" {'CAGR':>7} " + "|" + f" {'Max DD':>13} " + "|", rule]
+    for a in ASSETS:
+        tr = total_return(levels[a]) * 100
+        cg = cagr(levels[a]) * 100
+        dd = full_period_max_dd(levels[a]) * 100
+        out.append("|" + f" {a:<5} " + "|" + f" {tr:>11.1f}%  " + "|"
+                   + f" {cg:>6.2f}% " + "|" + f" {dd:>11.1f}%  " + "|")
+    out.append(rule)
+    return "\n".join(out)
+
+
+# ---------------------------------------------------------------------------
 # Combined return + drawdown table (bordered, grouped by asset)
 # ---------------------------------------------------------------------------
 def combined_table(levels: pd.DataFrame, rets: pd.DataFrame) -> str:
@@ -125,8 +145,11 @@ def combined_table(levels: pd.DataFrame, rets: pd.DataFrame) -> str:
         mdd = full_period_max_dd(levels[a]) * 100
         tot_cells.append(f"{tr:>9.2f}{mdd:>9.2f}")
     out.append("|" + f"{'TOTAL':^6}" + "|" + "|".join(tot_cells) + "|")
+    cagr_cells = [f"{cagr(levels[a])*100:>9.2f}{'':>9}" for a in ASSETS]
+    out.append("|" + f"{'CAGR':^6}" + "|" + "|".join(cagr_cells) + "|")
     out.append(rule)
-    out.append("  (TOTAL row = cumulative total return | full-period max drawdown)")
+    out.append("  (TOTAL = cumulative return | full-period max drawdown; "
+               "CAGR = annualised return)")
     return "\n".join(out)
 
 
@@ -134,7 +157,7 @@ def main():
     levels = load_levels()
     rets = monthly_returns(levels)
 
-    blocks = [combined_table(levels, rets)]
+    blocks = [summary_table(levels), combined_table(levels, rets)]
     blocks += [asset_monthly_table(rets[a], levels[a], a) for a in ASSETS]
     text = "\n\n\n".join(blocks) + "\n"
 

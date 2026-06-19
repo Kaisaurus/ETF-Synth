@@ -134,8 +134,8 @@ def main():
     levels = load_levels()
     rets = monthly_returns(levels)
 
-    blocks = [asset_monthly_table(rets[a], levels[a], a) for a in ASSETS]
-    blocks.append(combined_table(levels, rets))
+    blocks = [combined_table(levels, rets)]
+    blocks += [asset_monthly_table(rets[a], levels[a], a) for a in ASSETS]
     text = "\n\n\n".join(blocks) + "\n"
 
     os.makedirs("reports", exist_ok=True)

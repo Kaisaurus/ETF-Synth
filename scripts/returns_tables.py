@@ -56,9 +56,9 @@ def full_period_max_dd(level: pd.Series) -> float:
     return (base / base.cummax() - 1.0).min()
 
 
-def max_dd_recovery_days(level: pd.Series) -> int | None:
-    """Calendar days from the peak that began the worst drawdown to the date the
-    level first fully recovers back to that peak. None if not yet recovered."""
+def drawdown_window(level: pd.Series):
+    """(peak_date, trough_date, recovery_date) for the worst peak-to-trough
+    drawdown in the series. recovery_date is None if not yet recovered."""
     base = pd.concat([pd.Series([100.0], index=[level.index[0]]), level])
     run_max = base.cummax()
     dd = base / run_max - 1.0
@@ -67,9 +67,8 @@ def max_dd_recovery_days(level: pd.Series) -> int | None:
     peak_date = base[:trough_date].idxmax()
     after = base[base.index > trough_date]
     recovered = after[after >= peak_level]
-    if recovered.empty:
-        return None
-    return (recovered.index[0] - peak_date).days
+    recovery_date = recovered.index[0] if not recovered.empty else None
+    return peak_date, trough_date, recovery_date
 
 
 def total_return(level: pd.Series) -> float:
@@ -114,9 +113,14 @@ def asset_monthly_table(rets: pd.Series, level: pd.Series, asset: str) -> str:
 # ---------------------------------------------------------------------------
 # Headline summary table
 # ---------------------------------------------------------------------------
-def _format_recovery(days: int | None) -> str:
-    if days is None:
+def _format_period(peak_date, trough_date) -> str:
+    return f"{peak_date.strftime('%b %Y')} - {trough_date.strftime('%b %Y')}"
+
+
+def _format_recovery(peak_date, recovery_date) -> str:
+    if recovery_date is None:
         return "not yet"
+    days = (recovery_date - peak_date).days
     return f"{days:,}d ({days/365.25:.1f}y)"
 
 
@@ -124,22 +128,26 @@ def summary_table(levels: pd.DataFrame) -> str:
     start = levels.index.min().strftime("%b %Y")
     end = levels.index.max().strftime("%b %Y")
     rule = ("+" + "-" * 7 + "+" + "-" * 15 + "+" + "-" * 9 + "+" + "-" * 15
-            + "+" + "-" * 18 + "+")
+            + "+" + "-" * 21 + "+" + "-" * 18 + "+")
     out = [f"=== Summary ({start} - {end}, total return, AUD) ===", rule,
            "|" + f" {'Fund':<5} " + "|" + f" {'Total return':>13} " + "|"
            + f" {'CAGR':>7} " + "|" + f" {'Max DD':>13} " + "|"
+           + f" {'Drawdown period':>19} " + "|"
            + f" {'Max DD recovery':>16} " + "|", rule]
     for a in ASSETS:
         tr = total_return(levels[a]) * 100
         cg = cagr(levels[a]) * 100
         dd = full_period_max_dd(levels[a]) * 100
-        rec = _format_recovery(max_dd_recovery_days(levels[a]))
+        peak_date, trough_date, recovery_date = drawdown_window(levels[a])
+        period = _format_period(peak_date, trough_date)
+        rec = _format_recovery(peak_date, recovery_date)
         out.append("|" + f" {a:<5} " + "|" + f" {tr:>11.1f}%  " + "|"
                    + f" {cg:>6.2f}% " + "|" + f" {dd:>11.1f}%  " + "|"
+                   + f" {period:>19} " + "|"
                    + f" {rec:>16} " + "|")
     out.append(rule)
-    out.append("  (Max DD recovery = calendar days from the pre-crash peak to "
-               "fully recovering that peak)")
+    out.append("  (Drawdown period = pre-crash peak to trough; "
+               "Max DD recovery = calendar days peak to full recovery)")
     return "\n".join(out)
 
 

@@ -34,13 +34,13 @@ Monthly-return correlation: **DHHF 0.97, VDHG 0.97, BGBL 0.92, GHHF 0.94, GGBL 0
 
 ## Headline results (Jan 1995 → Jun 2026, total return, AUD)
 
-| Fund | Total return | CAGR | Worst drawdown | Time to recover |
-|------|-------------:|-----:|---------------:|-----------------:|
-| VDHG | +1,285% | 8.8% | −41% | 5.9 yrs |
-| DHHF | +1,558% | 9.4% | −41% | 6.4 yrs |
-| BGBL | +1,913% | 10.0% | −47% | 13.1 yrs |
-| GHHF | +2,520% | 11.0% | **−60%** | 7.6 yrs |
-| GGBL | +3,135% | 11.6% | **−73%** | **16.2 yrs** |
+| Fund | Total return | CAGR | Worst drawdown | Drawdown period | Time to recover |
+|------|-------------:|-----:|---------------:|:----------------:|-----------------:|
+| VDHG | +1,285% | 8.8% | −41% | Oct 2007 – Feb 2009 | 5.9 yrs |
+| DHHF | +1,558% | 9.4% | −41% | May 2007 – Feb 2009 | 6.4 yrs |
+| BGBL | +1,913% | 10.0% | −47% | Oct 2000 – Feb 2003 | 13.1 yrs |
+| GHHF | +2,520% | 11.0% | **−60%** | May 2007 – Feb 2009 | 7.6 yrs |
+| GGBL | +3,135% | 11.6% | **−73%** | Oct 2000 – Aug 2011 | **16.2 yrs** |
 
 (VDHG = Vanguard Diversified High Growth, included as a comparison; it holds 10% bonds.)
 "Time to recover" = years from the pre-crash peak back to break-even.

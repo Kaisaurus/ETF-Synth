@@ -26,13 +26,13 @@ to have lived through.
 
 ## Results (Jan 1995 – Jun 2026, total return, AUD)
 
-| Fund | Total return | CAGR | Worst drawdown | Time to recover |
-|------|-------------:|-----:|---------------:|-----------------:|
-| VDHG | +1,285% | 8.70% | −41.1% | 5.9 yrs |
-| DHHF | +1,558% | 9.32% | −40.9% | 6.4 yrs |
-| BGBL | +1,913% | 10.00% | −47.4% | 13.1 yrs |
-| GHHF | +2,520% | 10.92% | **−59.7%** | 7.6 yrs |
-| GGBL | +3,135% | 11.67% | **−73.3%** | **16.2 yrs** |
+| Fund | Total return | CAGR | Worst drawdown | Drawdown period | Time to recover |
+|------|-------------:|-----:|---------------:|:----------------:|-----------------:|
+| VDHG | +1,285% | 8.70% | −41.1% | Oct 2007 – Feb 2009 | 5.9 yrs |
+| DHHF | +1,558% | 9.32% | −40.9% | May 2007 – Feb 2009 | 6.4 yrs |
+| BGBL | +1,913% | 10.00% | −47.4% | Oct 2000 – Feb 2003 | 13.1 yrs |
+| GHHF | +2,520% | 10.92% | **−59.7%** | May 2007 – Feb 2009 | 7.6 yrs |
+| GGBL | +3,135% | 11.67% | **−73.3%** | Oct 2000 – Aug 2011 | **16.2 yrs** |
 
 The geared funds compound faster but show brutal worst-case drawdowns. Note BGBL/GGBL's
 worst drawdown isn't the GFC — it's the **dot-com crash**: GGBL peaked in Oct 2000, fell

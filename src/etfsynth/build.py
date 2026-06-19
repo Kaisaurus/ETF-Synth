@@ -44,14 +44,45 @@ def splice_returns(series_list: list[pd.Series]) -> pd.Series:
     return combined.dropna()
 
 
+_LEVEL_CACHE: dict[str, pd.Series] = {}
+
+
+def _level(ticker: str) -> pd.Series:
+    """Fetch a ticker's monthly TR level once, then memoize for the run."""
+    if ticker not in _LEVEL_CACHE:
+        _LEVEL_CACHE[ticker] = ingest.fetch_yf_monthly(ticker)
+    return _LEVEL_CACHE[ticker]
+
+
 def _proxy_aud_returns(ticker: str, fx: pd.Series) -> pd.Series:
-    """Fetch a proxy's monthly TR level and return AUD monthly returns."""
-    lvl = ingest.fetch_yf_monthly(ticker)
+    """Monthly AUD total returns (USD proxies converted to AUD = unhedged)."""
+    lvl = _level(ticker)
     if lvl.empty:
         return pd.Series(dtype="float64")
     if ticker in config.USD_PROXIES:
         lvl = to_aud(lvl, fx)
     return returns(lvl)
+
+
+def _proxy_local_returns(ticker: str) -> pd.Series:
+    """Monthly local-currency total returns (no FX conversion). Used as a proxy
+    for AUD-hedged exposure (ignores hedge carry)."""
+    lvl = _level(ticker)
+    return returns(lvl) if not lvl.empty else pd.Series(dtype="float64")
+
+
+def _spliced(tickers: list[str], fx: pd.Series, local: bool = False) -> pd.Series:
+    fn = (lambda t: _proxy_local_returns(t)) if local else (lambda t: _proxy_aud_returns(t, fx))
+    parts = [fn(t) for t in tickers]
+    return splice_returns([s for s in parts if not s.empty])
+
+
+def _aus_sleeve(fx: pd.Series) -> pd.Series:
+    """Australian shares total return: STW.AX real TR spliced over ^AORD price +
+    dividend-yield add-back for the pre-STW period."""
+    r_stw = returns(_level(config.AUS_TR_ETF))
+    r_aord_tr = returns(_level(config.AUS_PRICE_INDEX)) + config.AUS_DIV_YIELD / 12.0
+    return splice_returns([r_stw, r_aord_tr])
 
 
 # ---------------------------------------------------------------------------
@@ -65,19 +96,39 @@ def build_sleeves(fx: pd.Series) -> dict[str, pd.Series]:
     sleeves["emerging"] = _proxy_aud_returns(config.SLEEVE_PROXIES["emerging"][0], fx)
 
     # Developed ex-US: splice VTMGX <- VGTSX <- VWIGX (all AUD).
-    chain = [_proxy_aud_returns(t, fx) for t in config.DEV_EX_US_CHAIN]
-    chain = [s for s in chain if not s.empty]
-    sleeves["dev_ex_us"] = splice_returns(chain)
+    sleeves["dev_ex_us"] = _spliced(config.DEV_EX_US_CHAIN, fx)
 
-    # Australian shares total return: STW.AX (real TR) spliced over reconstructed
-    # accumulation (^AORD price + dividend-yield accrual) for the pre-STW period.
-    stw = ingest.fetch_yf_monthly(config.AUS_TR_ETF)          # already AUD
-    aord = ingest.fetch_yf_monthly(config.AUS_PRICE_INDEX)    # price only, AUD
-    r_stw = returns(stw)
-    r_aord_tr = returns(aord) + config.AUS_DIV_YIELD / 12.0
-    sleeves["aus_shares"] = splice_returns([r_stw, r_aord_tr])
+    # Australian shares total return.
+    sleeves["aus_shares"] = _aus_sleeve(fx)
 
     return sleeves
+
+
+def build_vdhg(fx: pd.Series) -> pd.Series:
+    """Synthetic VDHG (90/10) monthly net return from free proxies.
+
+    Developed ex-Aus is the US+dev market-cap blend, taken both unhedged (AUD) and
+    hedged (local-currency). Emerging is AUD; bonds use the local-currency bond
+    proxy as a stand-in for AUD-hedged global aggregate.
+    """
+    w = config.WORLD_EX_AUS_WEIGHTS
+    us_t = config.SLEEVE_PROXIES["us_total"][0]
+
+    intl_unhedged = (w["us_total"] * _proxy_aud_returns(us_t, fx)
+                     + w["dev_ex_us"] * _spliced(config.DEV_EX_US_CHAIN, fx))
+    intl_hedged = (w["us_total"] * _proxy_local_returns(us_t)
+                   + w["dev_ex_us"] * _spliced(config.DEV_EX_US_CHAIN, fx, local=True))
+
+    parts = {
+        "aus_shares":    _aus_sleeve(fx),
+        "intl_unhedged": intl_unhedged,
+        "intl_hedged":   intl_hedged,
+        "emerging":      _proxy_aud_returns(config.SLEEVE_PROXIES["emerging"][0], fx),
+        "bonds":         _proxy_local_returns(config.BOND_PROXY),
+    }
+    df = pd.DataFrame(parts).dropna()
+    gross = (df * pd.Series(config.VDHG_WEIGHTS)).sum(axis=1)
+    return apply_fee(gross, config.MER["VDHG"])
 
 
 # ---------------------------------------------------------------------------
@@ -122,6 +173,7 @@ def build_all() -> dict[str, pd.Series]:
 
     out_rets = {
         "DHHF": apply_fee(dhhf_basket, config.MER["DHHF"]),
+        "VDHG": build_vdhg(fx),
         "BGBL": apply_fee(world_basket, config.MER["BGBL"]),
         "GHHF": apply_fee(apply_gearing(dhhf_basket, cash), config.MER["GHHF"]),
         "GGBL": apply_fee(apply_gearing(world_basket, cash), config.MER["GGBL"]),

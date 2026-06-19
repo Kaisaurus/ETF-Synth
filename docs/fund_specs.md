@@ -21,6 +21,20 @@ need a final primary-source check are flagged ⚠️.
 - **Note:** for the synthetic build, decide whether to hold target SAA weights constant or
   approximate the historical drift. v1: hold constant at a documented target.
 
+## VDHG — Vanguard Diversified High Growth (comparison fund)
+- **Type:** Multi-asset, ~90% growth / 10% bonds. Most popular one-stop fund in Aus.
+- **MER:** 0.27% p.a.  **Inception:** ~Nov 2017 (real data from 2017-11).
+- **Synthetic SAA (approx, held constant):** Aus shares 36%, developed ex-Aus unhedged 33%
+  (intl small-cap folded in), developed ex-Aus AUD-hedged 16%, emerging 5%, bonds 10%.
+- **Proxy approximations (free data):**
+  - *Hedged international* ≈ local-currency (USD) returns of the US+dev blend, i.e. FX
+    stripped out — ignores hedge carry (historically a small positive for AUD investors).
+  - *Bonds* ≈ Vanguard Total Bond Market (VBMFX, US Agg, from 1986) in local terms, used
+    as a stand-in for AUD-hedged global aggregate bonds.
+- **Note:** the hedged sleeve means VDHG gets *less* of the AUD-fall cushion that helped
+  fully-unhedged DHHF in 2008 — its synthetic GFC drawdown (~−41%) is ~= DHHF's despite
+  the bond allocation.
+
 ## BGBL — Global Shares ETF
 - **Type:** Index tracker.
 - **Index:** Solactive GBS Developed Markets ex Australia Large & Mid Cap Index (~1,300–1,500
@@ -91,8 +105,9 @@ Synthetic vs real ETF monthly returns over the live overlap window:
 
 | Fund | Overlap (mo) | Corr | Tracking error (ann.) | Drift synth−real (ann.) |
 |------|--------------|------|-----------------------|--------------------------|
-| DHHF | 78 | 0.97 | 2.9% | +0.4% |
-| BGBL | 37 | 0.92 | 4.1% | −0.3% |
+| DHHF | 78 | 0.97 | 2.8% | +0.5% |
+| VDHG | 103 | 0.97 | 2.6% | +0.2% |
+| BGBL | 37 | 0.92 | 4.1% | +0.1% |
 | GHHF | 26 | 0.94 | 4.9% | −1.1% |
 | GGBL | 8  | 0.99 | 5.9% | +1.4% |
 

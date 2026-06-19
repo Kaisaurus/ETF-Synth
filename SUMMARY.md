@@ -30,16 +30,19 @@ Everything is built from **free public data**.
 ## Does it actually match the real funds?
 
 Yes — checked against each fund's real returns over the period it has existed.
-Monthly-return correlation: **DHHF 0.97, BGBL 0.92, GHHF 0.94, GGBL 0.99**.
+Monthly-return correlation: **DHHF 0.97, VDHG 0.97, BGBL 0.92, GHHF 0.94, GGBL 0.99**.
 
 ## Headline results (Jan 1995 → Jun 2026, total return, AUD)
 
 | Fund | Total return | CAGR | Worst drawdown |
 |------|-------------:|-----:|---------------:|
-| DHHF | +1,547% | 9.3% | −41% |
-| BGBL | +1,892% | 10.0% | −47% |
-| GHHF | +2,493% | 10.9% | **−60%** |
-| GGBL | +3,086% | 11.6% | **−73%** |
+| VDHG | +1,285% | 8.8% | −41% |
+| DHHF | +1,558% | 9.4% | −41% |
+| BGBL | +1,913% | 10.0% | −47% |
+| GHHF | +2,520% | 11.0% | **−60%** |
+| GGBL | +3,135% | 11.6% | **−73%** |
+
+(VDHG = Vanguard Diversified High Growth, included as a comparison; it holds 10% bonds.)
 
 The geared funds compound faster but the synthetic GFC drawdowns (−60% / −73%) show
 the risk their short real track records have never had to display.

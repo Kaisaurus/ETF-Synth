@@ -19,7 +19,7 @@ def main():
     levels = build.build_all()
 
     os.makedirs(config.PROCESSED_DIR, exist_ok=True)
-    funds = ["DHHF", "BGBL", "GHHF", "GGBL"]
+    funds = ["DHHF", "VDHG", "BGBL", "GHHF", "GGBL"]
 
     # Save synthetic levels (base 100) + a combined wide CSV.
     wide = pd.DataFrame({k: levels[k] for k in funds})

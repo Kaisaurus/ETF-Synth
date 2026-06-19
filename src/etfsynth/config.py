@@ -13,6 +13,7 @@ RESOLUTION = "ME"           # pandas month-end
 # ---- Real ETFs (calibration targets; short live history) -------------------
 REAL_ETFS = {
     "DHHF": "DHHF.AX",
+    "VDHG": "VDHG.AX",
     "BGBL": "BGBL.AX",
     "GHHF": "GHHF.AX",
     "GGBL": "GGBL.AX",
@@ -40,10 +41,26 @@ AUS_DIV_YIELD = 0.04           # annual yield add-back for pre-STW reconstructio
 
 # Currency: USD-denominated proxies that must be converted to AUD (unhedged).
 USD_PROXIES = {"VTSMX", "^SP500TR", "VFINX", "VTMGX", "EFA", "VEA",
-               "VEIEX", "EEM", "VWO", "VGTSX", "VXUS", "VWIGX"}
+               "VEIEX", "EEM", "VWO", "VGTSX", "VXUS", "VWIGX", "VBMFX"}
 
 # BGBL = developed markets ex-Australia ~ market-cap blend of US + developed-ex-US.
 WORLD_EX_AUS_WEIGHTS = {"us_total": 0.70, "dev_ex_us": 0.30}
+
+# Bond proxy for diversified funds' defensive sleeve. VBMFX = Vanguard Total Bond
+# Market (US Agg), TR via adj close, from 1986. Used in *local* (USD) terms as a
+# proxy for AUD-hedged global aggregate bonds (ignores hedge carry).
+BOND_PROXY = "VBMFX"
+
+# VDHG (Vanguard Diversified High Growth) ~90% growth / 10% bonds. Approximate SAA,
+# with intl small-cap folded into developed-unhedged and all bonds proxied as
+# hedged global agg. "hedged" sleeve uses local-currency (USD) returns.
+VDHG_WEIGHTS = {
+    "aus_shares":    0.36,
+    "intl_unhedged": 0.33,   # developed ex-Aus unhedged (+ intl small folded in)
+    "intl_hedged":   0.16,   # developed ex-Aus AUD-hedged
+    "emerging":      0.05,
+    "bonds":         0.10,
+}
 
 # ---- FX & rates (FRED CSV, no API key) -------------------------------------
 FRED_SERIES = {
@@ -55,6 +72,7 @@ FRED_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
 # ---- Fund fees (annual MER, decimal) ---------------------------------------
 MER = {
     "DHHF": 0.0019,
+    "VDHG": 0.0027,
     "BGBL": 0.0008,
     "GHHF": 0.0035,
     "GGBL": 0.0035,   # ⚠️ confirm

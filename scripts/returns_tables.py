@@ -18,7 +18,7 @@ import pandas as pd
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from etfsynth import config  # noqa: E402
 
-ASSETS = ["DHHF", "BGBL", "GHHF", "GGBL"]
+ASSETS = ["DHHF", "VDHG", "BGBL", "GHHF", "GGBL"]
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 

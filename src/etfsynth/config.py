@@ -30,6 +30,21 @@ SLEEVE_PROXIES = {
     "intl_total":     ["VGTSX", "VXUS"],                # Total intl (dev+EM, ~1996)
 }
 
+# Splice chains for sleeves whose primary proxy is too short (returns-based splice,
+# priority/best-quality first). All USD funds are AUD-converted before splicing.
+DEV_EX_US_CHAIN = ["VTMGX", "VGTSX", "VWIGX"]   # 1999 <- 1996 <- 1981(active)
+# Australian total return: real ETF TR spliced over a price-index reconstruction.
+AUS_TR_ETF = "STW.AX"          # SPDR S&P/ASX 200, TR via adj close (~2001)
+AUS_PRICE_INDEX = "^AORD"      # All Ordinaries PRICE (no dividends)
+AUS_DIV_YIELD = 0.04           # annual yield add-back for pre-STW reconstruction
+
+# Currency: USD-denominated proxies that must be converted to AUD (unhedged).
+USD_PROXIES = {"VTSMX", "^SP500TR", "VFINX", "VTMGX", "EFA", "VEA",
+               "VEIEX", "EEM", "VWO", "VGTSX", "VXUS", "VWIGX"}
+
+# BGBL = developed markets ex-Australia ~ market-cap blend of US + developed-ex-US.
+WORLD_EX_AUS_WEIGHTS = {"us_total": 0.70, "dev_ex_us": 0.30}
+
 # ---- FX & rates (FRED CSV, no API key) -------------------------------------
 FRED_SERIES = {
     "usd_per_aud": "DEXUSAL",        # USD per 1 AUD, daily, from 1971

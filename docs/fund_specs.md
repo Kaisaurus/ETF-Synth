@@ -86,6 +86,22 @@ Monthly, total-return where noted. Full report in `data/raw/_coverage.csv`.
 | RBA cash rate target | RBA (free) | from 1990 |
 | AUD/USD & trade-weighted FX | RBA / FRED | unhedged sleeves |
 
+## Calibration results (v1, June 2026)
+Synthetic vs real ETF monthly returns over the live overlap window:
+
+| Fund | Overlap (mo) | Corr | Tracking error (ann.) | Drift synth−real (ann.) |
+|------|--------------|------|-----------------------|--------------------------|
+| DHHF | 78 | 0.97 | 2.9% | +0.4% |
+| BGBL | 37 | 0.92 | 4.1% | −0.3% |
+| GHHF | 26 | 0.94 | 4.9% | −1.1% |
+| GGBL | 8  | 0.99 | 5.9% | +1.4% |
+
+High correlations confirm the proxies capture fund behaviour; tracking error scales
+with gearing as expected. Drifts (<±1.5%/yr) are the residual proxy/fee bias and can be
+removed with `calibrate.calibrate_drift` — **not auto-applied to GHHF/GGBL** given their
+short windows (GGBL only 8 months → would overfit). Synthetic CAGRs since Jan-1995:
+DHHF 9.4%, BGBL 9.9%, GHHF 11.0%, GGBL 11.5%.
+
 ## Decisions log
 - **2026-06-19** — Resolution: **monthly**. Start date: **January 1995** (full dot-com cycle
   incl. run-up + crash, Asian crisis, GFC, COVID, 2022 shock). Binding constraint: global

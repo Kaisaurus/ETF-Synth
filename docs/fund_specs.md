@@ -8,7 +8,7 @@ need a final primary-source check are flagged ⚠️.
   Not strictly index-tracking: a strategic asset allocation (SAA) reviewed annually and
   rebalanced when sleeve weights drift >2% from target at quarter-end.
 - **MER:** 0.19% p.a.
-- **Inception:** ⚠️ sources disagree (Dec 2019 vs 15 Dec 2020) — confirm before locking.
+- **Inception:** **December 2019** (confirmed: yfinance month-end prices start 2019-12-31).
 - **Current sleeve composition** (drifts over time):
   | Sleeve | ~Weight | Proxy index for synthetic build |
   |--------|---------|----------------------------------|
@@ -41,7 +41,7 @@ need a final primary-source check are flagged ⚠️.
 - **Type:** Internally geared version of BGBL (borrows + invests proceeds in BGBL exposure).
 - **Gearing:** 30–40% LVR.
 - **MER:** ⚠️ confirm (~0.35% expected).
-- **Inception:** 2024 (confirm exact date).
+- **Inception:** **~October 2025** (price data starts 2025-10-31; very short live window — only ~9 months for calibration).
 - **Synthetic build:** apply gearing model on ungeared BGBL synthetic.
 
 ## Gearing model (GHHF, GGBL)
@@ -55,6 +55,27 @@ where `G_t` = gross exposure / equity (e.g. LVR 35% → G ≈ 1/(1-0.35) ≈ 1.5
 `borrow_rate_t` = RBA cash rate + wholesale spread (spread calibrated to live data).
 Monthly rebalancing approximates the fund's daily reset; expect some path-dependence
 ("volatility decay") vs the real fund — calibrate spread + G to the live overlap window.
+
+## Data coverage (from `scripts/fetch_data.py`, June 2026)
+Monthly, total-return where noted. Full report in `data/raw/_coverage.csv`.
+
+| Series | Chosen proxy | History from | Notes |
+|--------|-------------|--------------|-------|
+| US total market | VTSMX (Vanguard) | 1994-12 ✅ | TR via adj. close |
+| Emerging markets | VEIEX (Vanguard) | 1994-12 ✅ | TR via adj. close |
+| Developed ex-US | VTMGX (Vanguard) | 1999-08 ⚠️ | **gap 1995–1999**, needs backfill |
+| Australian shares | ^AORD | 1994-12 ⚠️ | **PRICE only — no dividends**, needs TR fix |
+| Total international | VGTSX | 1996-04 | dev+EM; candidate backfill for dev_ex_us |
+| USD per AUD | FRED DEXUSAL | 1994-12 ✅ | FX for unhedged sleeves |
+| AUS 3m interbank | FRED IR3TIB01AUM156N | 1994-12 ✅ | cash-rate proxy for gearing |
+| Real DHHF/BGBL/GHHF/GGBL | *.AX | 2019-12 / 2023-05 / 2024-04 / 2025-10 | calibration targets |
+
+### Open data fixes before the build layer
+1. **Australian total return** — `^AORD` excludes dividends (~4%/yr + franking). Fix by
+   reconstructing accumulation (price + dividend-yield accrual) and/or splicing STW.AX
+   (TR from 2001). Biggest single fidelity issue.
+2. **Developed ex-US 1995–1999 gap** — backfill VTMGX with VGTSX (1996) and/or an active
+   intl proxy; small residual error on a 17% sleeve.
 
 ## Data sources
 | Series | Source | Notes |

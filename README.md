@@ -8,12 +8,12 @@ market regimes the funds themselves are too young to have lived through.
 
 | Ticker | Fund | Type | Inception | MER |
 |--------|------|------|-----------|-----|
-| DHHF | Diversified All Growth | Multi-asset (fund-of-ETFs, ~100% growth) | 2020* | 0.19% |
-| BGBL | Global Shares | Index (Solactive GBS Dev Mkts ex-Aus L&M Cap) | 2023 | 0.08% |
+| DHHF | Diversified All Growth | Multi-asset (fund-of-ETFs, ~100% growth) | Dec 2019 | 0.19% |
+| BGBL | Global Shares | Index (Solactive GBS Dev Mkts ex-Aus L&M Cap) | May 2023 | 0.08% |
 | GHHF | Wealth Builder Diversified All Growth Geared | Internally geared DHHF, 30–40% LVR | Apr 2024 | 0.35% |
-| GGBL | Wealth Builder Global Shares Geared | Internally geared BGBL, 30–40% LVR | 2024 | ~0.35% |
+| GGBL | Wealth Builder Global Shares Geared | Internally geared BGBL, 30–40% LVR | ~Oct 2025 | ~0.35% |
 
-\* inception date pending final confirmation — see [docs/fund_specs.md](docs/fund_specs.md).
+Inception dates confirmed from price data — see [docs/fund_specs.md](docs/fund_specs.md).
 
 ## Approach
 

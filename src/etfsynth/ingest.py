@@ -19,12 +19,12 @@ from . import config
 # ---------------------------------------------------------------------------
 # yfinance (equities / ETFs)
 # ---------------------------------------------------------------------------
-def fetch_yf_monthly(ticker: str, start: str = config.START_DATE) -> pd.Series:
-    """Month-end total-return level for a single ticker via yfinance.
+def fetch_yf_monthly(ticker: str, start: str = config.START_DATE) -> pd.DataFrame:
+    """Month-end total-return OHLC for a single ticker via yfinance.
 
-    Downloads daily auto-adjusted closes (dividends reinvested) and resamples to
-    month-end, taking the last available close in each month. Returns an empty
-    Series if the ticker has no data.
+    Downloads daily auto-adjusted OHLC (dividends reinvested) and resamples to
+    month-end, taking the last available close, monthly high, and monthly low.
+    Returns an empty DataFrame if the ticker has no data.
     """
     import yfinance as yf
 
@@ -33,13 +33,23 @@ def fetch_yf_monthly(ticker: str, start: str = config.START_DATE) -> pd.Series:
         progress=False, threads=False,
     )
     if df is None or df.empty:
-        return pd.Series(dtype="float64", name=ticker)
+        return pd.DataFrame(dtype="float64")
+
+    # Handle case where yfinance returns frame-of-frames for single ticker
+    if isinstance(df["Close"], pd.DataFrame):
+        df = df.iloc[:, df.columns.get_level_values(0) == ticker]
+        df.columns = df.columns.get_level_values(1)
 
     close = df["Close"]
-    if isinstance(close, pd.DataFrame):       # yfinance sometimes returns a frame
-        close = close.iloc[:, 0]
-    monthly = close.resample(config.RESOLUTION).last().dropna()
-    monthly.name = ticker
+    high = df["High"]
+    low = df["Low"]
+
+    monthly = pd.DataFrame({
+        "close": close.resample(config.RESOLUTION).last(),
+        "high": high.resample(config.RESOLUTION).max(),
+        "low": low.resample(config.RESOLUTION).min(),
+    }).dropna()
+
     monthly.index = monthly.index.tz_localize(None)
     return monthly
 

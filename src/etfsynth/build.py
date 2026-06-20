@@ -44,14 +44,15 @@ def splice_returns(series_list: list[pd.Series]) -> pd.Series:
     return combined.dropna()
 
 
-_LEVEL_CACHE: dict[str, pd.Series] = {}
+_LEVEL_CACHE: dict[str, pd.DataFrame] = {}
 
 
 def _level(ticker: str) -> pd.Series:
-    """Fetch a ticker's monthly TR level once, then memoize for the run."""
+    """Fetch a ticker's monthly TR level (close) once, then memoize for the run."""
     if ticker not in _LEVEL_CACHE:
-        _LEVEL_CACHE[ticker] = ingest.fetch_yf_monthly(ticker)
-    return _LEVEL_CACHE[ticker]
+        monthly_df = ingest.fetch_yf_monthly(ticker)
+        _LEVEL_CACHE[ticker] = monthly_df
+    return _LEVEL_CACHE[ticker]["close"] if not _LEVEL_CACHE[ticker].empty else pd.Series(dtype="float64")
 
 
 def _proxy_aud_returns(ticker: str, fx: pd.Series) -> pd.Series:
